@@ -29,7 +29,7 @@ public class CodeGenerator {
     static final String DATABASE_USERNAME="root";
     static final String DATABASE_PASSWD="root";
     static final String PACKAGE_NAME="com.ydsh";
-    static final String MODULE_NAME="order";
+    static final String MODULE_NAME="demo";
     static final String IP="127.0.0.1";
 
 
