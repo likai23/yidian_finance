@@ -1,71 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-    <property resource="application.properties" />
-    <springProperty scope="context" name="logLevel" source="logging.level.root"/>
-    <springProperty scope="context" name="logPath" source="logging.path"/>
-    <!--引入默认的一些设置-->
-    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
-    <!--级别配置-->
-    <logger name="org.springframework.web" level="info"/>
-    <!--<logger name="com.ydsh.order.mapper" level="debug"/>-->
-    <logger name="com.ydsh" level="info"/>
+<configuration  scan="true" scanPeriod="60 seconds" debug="false">
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+    <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
+    <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
+    <property name="CONSOLE_LOG_PATTERN" value="${CONSOLE_LOG_PATTERN:-%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+    <property name="FILE_LOG_PATTERN" value="${FILE_LOG_PATTERN:-%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+    <SpringProperty scope="context" name="logPath" source="logging.path"/>
+    <SpringProperty scope="context" name="logName" source="logging.name"/>
 
-    <!--写入日志到控制台的appender,用默认的,但是要去掉charset,否则windows下tomcat下乱码-->
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度,%-4line:行号,%msg：日志消息，%n是换行符-->
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %-40.40logger{39} [%-4line] : %msg%n</pattern>
-        </encoder>
-    </appender>
+    <!-- 测试环境+开发环境. 多个使用逗号隔开. -->
+    <springProfile name="test,dev">
 
-    <!--写入日志到文件的appender-->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <!-- rollover daily -->
-            <fileNamePattern>${logPath}/ydsh-saas-service-order-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <!-- each file should be at most 10MB, keep 60 days worth of history, but at most 10GB -->
-            <maxFileSize>10MB</maxFileSize>
-            <maxHistory>60</maxHistory>
-            <totalSizeCap>10GB</totalSizeCap>
-        </rollingPolicy>
+        <!--输出到控制台-->
+        <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            </encoder>
+        </appender>
+        <!--按天生成日志-->
+        <appender name="logFile"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <Prudent>true</Prudent>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <FileNamePattern>
+                  ${logPath}/${logName}-%d{yyyy-MM-dd}.%i.log
+                </FileNamePattern>
+                <!--日志文件保留天数-->
+                <MaxHistory>15</MaxHistory>
+                <maxFileSize>10MB</maxFileSize>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${FILE_LOG_PATTERN}</pattern>
+            </encoder>
+        </appender>
 
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度,%-4line:行号,%msg：日志消息，%n是换行符-->
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %-40.40logger{39} [%-4L] : %msg%n</pattern>
-        </encoder>
-    </appender>
+        <logger name="org.springframework.boot" level="debug" additivity="false">
+            <appender-ref ref="console"/>
+            <appender-ref ref="logFile" />
+        </logger>
 
-    <!--异步到文件-->
-    <appender name="asyncFileAppender" class="ch.qos.logback.classic.AsyncAppender">
-        <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
-        <discardingThreshold>0</discardingThreshold>
-        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
-        <queueSize>500</queueSize>
-        <!-- 添加附加的appender,最多只能添加一个 -->
-        <appender-ref ref="FILE"/>
-    </appender>
+        <logger name="root" level="info" additivity="false">
+            <appender-ref ref="console"/>
+            <appender-ref ref="logFile" />
+        </logger>
 
-    <springProfile name="local">
-        <root level="{logLevel}">
-            <appender-ref ref="CONSOLE"/>
-        </root>
     </springProfile>
 
-    <springProfile name="dev">
-        <root level="{logLevel}">
-            <appender-ref ref="CONSOLE"/>
-        </root>
-    </springProfile>
-
-    <springProfile name="test">
-        <root level="{logLevel}">
-            <appender-ref ref="CONSOLE"/>
-        </root>
-    </springProfile>
 
     <springProfile name="prod">
-        <root level="{logLevel}">
-            <appender-ref ref="asyncFileAppender"/>
-        </root>
+        <!--按天生成日志-->
+        <appender name="logFile"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <Prudent>true</Prudent>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <FileNamePattern>
+                    ${logPath}/${logName}-%d{yyyy-MM-dd}.%i.log
+                </FileNamePattern>
+                <!--日志文件保留天数-->
+                <MaxHistory>15</MaxHistory>
+                <maxFileSize>10MB</maxFileSize>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${FILE_LOG_PATTERN}</pattern>
+            </encoder>
+        </appender>
+        <logger name="root" level="error" additivity="false">
+            <appender-ref ref="logFile" />
+        </logger>
+        <logger name="org.springframework.boot" level="error" additivity="false">
+            <appender-ref ref="logFile" />
+        </logger>
     </springProfile>
+
 </configuration>

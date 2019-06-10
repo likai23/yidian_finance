@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.ydsh.demo.common.bean.Result;
 import com.ydsh.demo.common.db.DBKeyGenerator;
 import com.ydsh.demo.common.enums.DBBusinessKeyTypeEnums;
-import com.ydsh.demo.entity.TAuthor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;

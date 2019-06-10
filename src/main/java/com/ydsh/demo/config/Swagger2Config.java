@@ -28,8 +28,6 @@ public class Swagger2Config {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .enable(enableSwagger)// 生产环境的时候关闭 swagger 比较安全
-                .directModelSubstitute(Timestamp.class, Long.class)
-                .directModelSubstitute(Date.class, Long.class)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage(BASE_PACKAGE))
                 .paths(PathSelectors.any())
@@ -40,7 +38,7 @@ public class Swagger2Config {
                 .title("Swagger RESTful APIs")
                 .description("Swagger API 服务")
                 .termsOfServiceUrl("http://www.yidianlife.com")
-                .contact(new Contact("Swagger", "127.0.0.1", ""))
+                .contact(new Contact("Swagger", "127.0.0.1", "yaozhongjie@yidianlife"))
                 .version("1.0")
                 .build();
     }

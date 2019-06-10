@@ -6,9 +6,9 @@ package com.ydsh.demo.common.constans;
  **/
 public class CommonConstans {
 
-    public static final String CHARSET_UTF8="UTF-8";
+    public static final String CHARSET_UTF8 = "UTF-8";
 
-    public static final String CONTENTTYPE_APPLICATION="application/x-www-form-urlencoded";
+    public static final String CONTENTTYPE_APPLICATION = "application/x-www-form-urlencoded";
 
     public static final String CONTENTTYPE_JSON = "application/json";
 
