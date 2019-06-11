@@ -25,10 +25,10 @@ public class YdshCodeGenerator {
     public static final String AUTHOR = "姚仲杰";
     public static final String VERSION = "V1.0";
     // 数据库连接信息：连接URL、用户名、秘密、数据库名
-    public static final String URL = "jdbc:mysql://127.0.0.1:3306/privilege_system?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&useSSL=true&serverTimezone=UTC";
-    public static final String NAME = "root";
-    public static final String PASS = "root";
-    public static final String DATABASE = "privilege_system";
+    public static final String URL = "jdbc:mysql://192.168.0.251:3306/ydsh_finance?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&failOverReadOnly=false&useSSL=true&serverTimezone=UTC";
+    public static final String NAME = "elife-dev";
+    public static final String PASS = "Elife@2019";
+    public static final String DATABASE = "ydsh_finance";
     // 路径信息，分开路径方便聚合工程项目，微服务项目
     public static final String BASE_PACKAGE="com.ydsh.demo.web";
     public static final String APPLICATION_DIR="/";
@@ -45,9 +45,9 @@ public class YdshCodeGenerator {
         BasisInfo bi = new BasisInfo(PROJECT, AUTHOR, VERSION, URL, NAME, PASS, DATABASE, ENTITY_URL,
                 DAO_URL, XML_URL, SERVICE_URL, SERVICE_IMPL_URL, CONTROLLER_URL);
         //全库生成
-        generateByAll(bi);
+        //generateByAll(bi);
         //单表生成
-        //generateByTable(bi,"table","表注释");
+        generateByTable(bi,"pay_apply","表注释");
     }
 
     public static void generateByTable(BasisInfo bi, String table, String classComment){
@@ -61,6 +61,8 @@ public class YdshCodeGenerator {
                 generateByTable(bi,map.keySet().toArray()[0].toString(),map.get(map.keySet().toArray()[0]))
 
         );
+
+        System.out.println();
     }
 
     public static void baseGenerator(BasisInfo bi,String table){
@@ -72,6 +74,7 @@ public class YdshCodeGenerator {
         bi.setCreateTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")));
         //bi.setCis();
         String projectPath = System.getProperty("user.dir");
+
         try {
             bi = EntityInfoUtil.getInfo(bi);
             String fileUrl =projectPath+APPLICATION_DIR+"src\\main\\java\\";// 生成文件存放位置

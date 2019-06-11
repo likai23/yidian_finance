@@ -6,6 +6,7 @@ import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 import java.io.IOException;
@@ -13,7 +14,8 @@ import java.io.IOException;
 @SpringBootApplication(exclude = {FreeMarkerAutoConfiguration.class})
 @EnableEurekaClient
 @EnableApolloConfig
-public class ServiceDemoApplication {
+//@EnableDiscoveryClient
+public class ServiceFinanceApplication {
 
     public static void main(String[] args){
         Config config = ConfigService.getAppConfig();
@@ -24,6 +26,6 @@ public class ServiceDemoApplication {
         System.setProperty(PROFILES_ACTIVE,config.getProperty(PROFILES_ACTIVE, "prod"));
         System.setProperty(LOG_PATH,config.getProperty(LOG_PATH, "/logs"));
         System.setProperty(LOG_NAME,config.getProperty(APPLICATION_NAME, "UNDEFINED"));
-        SpringApplication.run(ServiceDemoApplication.class, args);
+        SpringApplication.run(ServiceFinanceApplication.class, args);
     }
 }

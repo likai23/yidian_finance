@@ -1,6 +1,8 @@
 package com.ydsh.demo;
 
 import com.alibaba.fastjson.JSON;
+import com.ctrip.framework.apollo.Config;
+import com.ctrip.framework.apollo.ConfigService;
 import com.ydsh.demo.common.bean.Result;
 import com.ydsh.demo.common.db.DBKeyGenerator;
 import com.ydsh.demo.common.enums.DBBusinessKeyTypeEnums;
@@ -15,6 +17,9 @@ public class ServiceDemoApplicationTests {
 
     @Test
     public void contextLoads() {
+        Config config = ConfigService.getAppConfig();
+        String v = config.getProperty("spring.application.name","锻炼");
+        System.out.println(v);
     }
 
     @Test
