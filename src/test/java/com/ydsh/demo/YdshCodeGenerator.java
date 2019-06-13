@@ -45,9 +45,9 @@ public class YdshCodeGenerator {
         BasisInfo bi = new BasisInfo(PROJECT, AUTHOR, VERSION, URL, NAME, PASS, DATABASE, ENTITY_URL,
                 DAO_URL, XML_URL, SERVICE_URL, SERVICE_IMPL_URL, CONTROLLER_URL);
         //全库生成
-        //generateByAll(bi);
+        generateByAll(bi);
         //单表生成
-        generateByTable(bi,"pay_apply","表注释");
+//        generateByTable(bi,"invoice","表注释");
     }
 
     public static void generateByTable(BasisInfo bi, String table, String classComment){
