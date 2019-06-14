@@ -23,6 +23,6 @@ import java.util.List;
  */
 @Mapper
 public interface InvoiceDao extends BaseMapper<Invoice> {
-    List<Invoice> fuzzyQuery(Invoice invoice);
+//    List<Invoice> fuzzyQuery(Invoice invoice);
 
 }

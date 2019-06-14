@@ -1,89 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ydsh.demo.web.dao.InvoiceDao">
-    <!--&lt;!&ndash; 通用查询映射结果 &ndash;&gt;-->
-    <!--<resultMap id="BaseResultMap" type="com.ydsh.demo.web.entity.Invoice">-->
-        <!--<id column="id" property="id" />-->
-        <!--<result column="invoice_no" property="invoiceNo" />-->
-        <!--<result column="invoice_kind" property="invoiceKind" />-->
-        <!--<result column="invoice_type" property="invoiceType" />-->
-        <!--<result column="invoice_amount" property="invoiceAmount" />-->
-        <!--<result column="invoice_way" property="invoiceWay" />-->
-        <!--<result column="invoice_status" property="invoiceStatus" />-->
-        <!--<result column="client_no" property="clientNo" />-->
-        <!--<result column="client_name" property="clientName" />-->
-        <!--<result column="client_type" property="clientType" />-->
-        <!--<result column="taxpayer_no" property="taxpayerNo" />-->
-        <!--<result column="phone" property="phone" />-->
-        <!--<result column="mail" property="mail" />-->
-        <!--<result column="address" property="address" />-->
-        <!--<result column="opening_bank" property="openingBank" />-->
-        <!--<result column="bank_account" property="bankAccount" />-->
-        <!--<result column="create_id" property="createId" />-->
-        <!--<result column="create_time" property="createTime" />-->
-        <!--<result column="examine" property="examine" />-->
-        <!--<result column="examine_opinion" property="examineOpinion" />-->
-        <!--<result column="express_company" property="expressCompany" />-->
-        <!--<result column="express_no" property="expressNo" />-->
-    <!--</resultMap>-->
-    <!--前端展示数据列-->
-    <sql id="show_column" >
-        id,
-        invoice_no,
-        invoice_kind,
-        invoice_type,
-        invoice_amount,
-        invoice_way,
-        invoice_status,
-        client_no,
-        client_name,
-        client_type,
-        taxpayer_no,
-        create_id,
-        create_time,
-    </sql>
 
-    <!-- 通用查询结果列 -->
-    <sql id="base_column">
-        id, invoice_no, invoice_kind, invoice_type, invoice_amount, invoice_way, invoice_status, client_no, client_name, client_type, taxpayer_no, phone, mail, address, opening_bank, bank_account, create_id, create_time, examine, examine_opinion, express_company, express_no
-    </sql>
+    <!--&lt;!&ndash; 通用查询结果列 &ndash;&gt;-->
+    <!--<sql id="base_column">-->
+        <!--id, invoice_no, invoice_kind, invoice_type, invoice_amount, invoice_way, invoice_status, client_no, client_name, client_type, taxpayer_no, phone, mail, address, opening_bank, bank_account, create_id, create_time, examine, examine_opinion, express_company, express_no-->
+    <!--</sql>-->
 
-    <!--模糊查询-->
-    <sql id="fuzzy_query">
-
-        <if test="invoiceNo != null and invoiceNo != ''">
-            AND invoice_no LIKE CONCAT('%',#{invoiceNo},'%')
-        </if>
-        <if test="invoiceKind != null and invoiceKind != ''">
-            AND invoice_kind LIKE CONCAT('%',#{invoiceKind},'%')
-        </if>
-        <if test="invoiceType != null and invoiceType != ''">
-            AND invoice_type LIKE CONCAT('%',#{invoiceType},'%')
-        </if>
-        <if test="invoiceStatus != null and invoiceStatus != ''">
-            AND invoice_status LIKE CONCAT('%',#{invoiceStatus},'%')
-        </if>
-        <if test="createId != null and createId != ''">
-            AND create_id LIKE CONCAT('%',#{createId},'%')
-        </if>
-        <if test="phone != null and phone != ''">
-            AND phone LIKE CONCAT('%',#{phone},'%')
-        </if>
-        <if test="createTime != null and createTime != ''">
-            AND create_time LIKE CONCAT('%',#{createTime},'%')
-        </if>
-
-    </sql>
-    <!--模糊查询-->
-    <select id="fuzzyQuery" parameterType="com.ydsh.demo.web.entity.Invoice" resultType="com.ydsh.demo.web.entity.Invoice">
-        SELECT
-        <include refid="base_column" />
-        FROM
-        invoice
-        WHERE
-        1 = 1
-        <!--<include refid="fuzzy_query" />-->
-    </select>
     <!--<select id="selectAllPage" resultMap="BaseResultMap" parameterType="java.util.Map" >-->
         <!--select-->
         <!--<include refid="show_column" />-->

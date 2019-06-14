@@ -25,10 +25,10 @@ import java.util.List;
  */
 @Service
 public class InvoiceServiceImpl  extends ServiceImpl<InvoiceDao, Invoice> implements InvoiceService  {
-    @Override
-    public List<Invoice> fuzzyQuery(Invoice invoice) {
-        return baseMapper.fuzzyQuery(invoice);
-    }
+//    @Override
+//    public List<Invoice> fuzzyQuery(Invoice invoice) {
+//        return baseMapper.fuzzyQuery(invoice);
+//    }
 //    @Autowired
 //    protected InvoiceDao invoiceDao;
 

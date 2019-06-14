@@ -7,6 +7,7 @@
 package com.ydsh.demo.web.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.enums.SqlLike;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -15,6 +16,7 @@ import com.ydsh.demo.web.entity.Invoice;
 import com.ydsh.demo.web.service.InvoiceService;
 import com.ydsh.generator.common.JsonResult;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,24 +41,22 @@ public class InvoiceController extends AbstractController<InvoiceService,Invoice
 
     @RequestMapping(value = "/fuzzyQuery",method = RequestMethod.POST)
     @ApiOperation(value = "模糊查询", notes = "作者：李锴")
-    public JsonResult<Invoice> fuzzyQuery(Invoice invoice) {
-//        if (null!=invoice ) {
-            List<Invoice> fuzzyResult= baseService.fuzzyQuery(invoice);
-//            if (null!=fuzzyResult ) {
-//                result.success("模糊查询成功");
-//            }else {
-//                result.error("查询信息不存在！");
-//            }
-//        }else {
-//            result.error("请传正确的参数！");
-//        }
-        LambdaQueryWrapper<Invoice> wrapper=new LambdaQueryWrapper<>();
-        wrapper.likeRight(Invoice::getClientNo,invoice.getClientNo());
-        Page<Invoice> page=new Page<Invoice>(1,10);
+    public JsonResult<IPage<Invoice>> fuzzyQuery(Invoice invoice) {
 
-        super.baseService.getBaseMapper().selectPage(page,wrapper);
+        JsonResult<IPage<Invoice>> returnPage=new JsonResult<IPage<Invoice>>();
 
-        return result;
+        IPage<Invoice> invoices = baseService.page(new Page<Invoice>(1,10),
+                new QueryWrapper<Invoice>()
+                        .like(!StringUtils.isEmpty(invoice.getInvoiceNo()),"invoice_no",invoice.getInvoiceNo())
+                        .like(!StringUtils.isEmpty(invoice.getInvoiceStatus()),"invoice_status",invoice.getInvoiceStatus())
+                        .like(!StringUtils.isEmpty(invoice.getInvoiceType()),"invoice_type",invoice.getInvoiceType())
+                        .like(!StringUtils.isEmpty(invoice.getInvoiceKind()),"invoice_kind",invoice.getInvoiceKind())
+                        .like(!StringUtils.isEmpty(invoice.getCreateId()),"create_id",invoice.getCreateId())
+                        .like(!StringUtils.isEmpty(invoice.getCreateTime()),"create_time",invoice.getCreateTime())
+                        .like(!StringUtils.isEmpty(invoice.getPhone()),"phone",invoice.getPhone())
+        );
+        returnPage.success(invoices);
+        return returnPage;
     }
 
 

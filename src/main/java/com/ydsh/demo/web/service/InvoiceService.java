@@ -20,5 +20,5 @@ import java.util.List;
  * 
  */
 public interface InvoiceService extends IService<Invoice> {
-    List<Invoice> fuzzyQuery(Invoice invoice);
+//    List<Invoice> fuzzyQuery(Invoice invoice);
 }
