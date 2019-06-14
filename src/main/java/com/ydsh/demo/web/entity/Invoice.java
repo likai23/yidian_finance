@@ -1,14 +1,12 @@
 /**
- * @filename:Invoice 2019-06-13 10:50:23
+ * @filename:Invoice 2019-06-14 02:36:06
  * @project ydsh-saas-service-demo  V1.0
  * Copyright(c) 2020 姚仲杰 Co. Ltd. 
  * All right reserved. 
  */
 package com.ydsh.demo.web.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -30,10 +28,9 @@ import java.io.Serializable;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
 public class Invoice implements Serializable {
 
-	private static final long serialVersionUID = 1560394223771L;
+	private static final long serialVersionUID = 1560494166774L;
 	
 	@TableId(value = "id", type = IdType.AUTO)
 	@ApiModelProperty(name = "id" , value = "主键ID")
@@ -70,7 +67,6 @@ public class Invoice implements Serializable {
 	private String bankAccount;
 	@ApiModelProperty(name = "createId" , value = "提交人 ")
 	private String createId;
-	@TableField(fill = FieldFill.INSERT_UPDATE)
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	@ApiModelProperty(name = "createTime" , value = "提交时间 ")

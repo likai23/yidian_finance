@@ -38,7 +38,13 @@ import java.util.List;
 @RequestMapping("/invoice")
 @Slf4j
 public class InvoiceController extends AbstractController<InvoiceService,Invoice>{
-
+    /**
+     * @explain 模糊查询
+     * @param   invoice
+     * @return  JsonResult
+     * @author  李锴
+     * @time    2019-06-11 10:50:21
+     */
     @RequestMapping(value = "/fuzzyQuery",method = RequestMethod.POST)
     @ApiOperation(value = "模糊查询", notes = "作者：李锴")
     public JsonResult<IPage<Invoice>> fuzzyQuery(Invoice invoice) {
