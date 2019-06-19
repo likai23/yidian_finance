@@ -1,22 +1,23 @@
 /**
- * @filename:ConsumeTypeOrder 2019-06-18 08:21:22
+ * @filename:ConsumeTypeOrder 2019-06-19 11:38:43
  * @project ydsh-saas-service-finance  V1.0
  * Copyright(c) 2020 姚仲杰 Co. Ltd. 
  * All right reserved. 
  */
 package com.ydsh.demo.web.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-import java.util.Date;
 import org.springframework.format.annotation.DateTimeFormat;
+
 import java.io.Serializable;
+import java.util.Date;
 
 /**   
  * <p>代码自动生成，请勿修改</p>
@@ -30,11 +31,13 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 public class ConsumeTypeOrder implements Serializable {
 
-	private static final long serialVersionUID = 1560860482597L;
+	private static final long serialVersionUID = 1560915523826L;
 	
 	@TableId(value = "id", type = IdType.AUTO)
 	@ApiModelProperty(name = "id" , value = "主键ID")
 	private Long id;
+	@ApiModelProperty(name = "orderId" , value = "订单明细表ID")
+	private Long orderId;
 	@ApiModelProperty(name = "invoiceId" , value = "发票主键ID")
 	private Long invoiceId;
 	@ApiModelProperty(name = "orderNo" , value = "订单编号")
@@ -66,6 +69,7 @@ public class ConsumeTypeOrder implements Serializable {
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	@ApiModelProperty(name = "createTime" , value = "创建时间")
+	@TableField(fill= FieldFill.INSERT_UPDATE)
 	private Date createTime;
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")

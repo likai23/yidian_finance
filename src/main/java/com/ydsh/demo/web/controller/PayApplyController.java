@@ -15,17 +15,17 @@ import com.ydsh.demo.web.controller.base.AbstractController;
 import com.ydsh.demo.web.entity.PayApply;
 import com.ydsh.demo.web.service.PayApplyService;
 import com.ydsh.generator.common.JsonResult;
-import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import io.swagger.annotations.Api;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * <p>自定义方法写在这里</p>
@@ -65,7 +65,7 @@ public class PayApplyController extends AbstractController<PayApplyService,PayAp
             );
             returnPage.success(payApplys);
         } else {
-            result.error("查询条件为空！");
+            result.error("查询条件不能为空！");
         }
         return returnPage;
     }

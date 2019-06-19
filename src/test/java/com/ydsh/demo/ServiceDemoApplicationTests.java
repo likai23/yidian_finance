@@ -1,21 +1,13 @@
 package com.ydsh.demo;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.annotation.DbType;
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ctrip.framework.apollo.Config;
-import com.ctrip.framework.apollo.ConfigService;
 import com.ydsh.demo.common.bean.Result;
-import com.ydsh.demo.common.db.DBKeyGenerator;
-import com.ydsh.demo.common.enums.DBBusinessKeyTypeEnums;
 import com.ydsh.demo.web.entity.ConsumeTypeOrder;
 import com.ydsh.demo.web.entity.Invoice;
+import com.ydsh.demo.web.service.ConsumeTypeOrderService;
 import com.ydsh.demo.web.service.InvoiceService;
 import com.ydsh.generator.common.JsonResult;
 import com.ydsh.generator.common.PageParam;
@@ -54,14 +46,18 @@ public class ServiceDemoApplicationTests {
 
 
     }
+    @Autowired
+    ConsumeTypeOrderService s;
     @Test
-    public void dbkeyTest() {
-
-        ConsumeTypeOrder a = new ConsumeTypeOrder();
+    public void mybatisPlusTest() {
         List<ConsumeTypeOrder> orders = new ArrayList<>();
-        orders.add(a);
-        IService<ConsumeTypeOrder> service = new ServiceImpl();
-        service.saveBatch(orders);
+        for (int i = 5; i < 9; i++) {
+            ConsumeTypeOrder order = new ConsumeTypeOrder();
+            order.setId(new Long(i));
+            order.setGoodsName("aaaaaaaa");
+            orders.add(order);
+        }
+        s.saveOrUpdateBatch(orders);
     }
 
     public static void main(String[] args) {

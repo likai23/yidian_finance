@@ -6,32 +6,30 @@
  */
 package com.ydsh.demo.web.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.enums.SqlLike;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ydsh.demo.common.db.DBKeyGenerator;
 import com.ydsh.demo.common.enums.DBBusinessKeyTypeEnums;
 import com.ydsh.demo.web.controller.base.AbstractController;
 import com.ydsh.demo.web.entity.ConsumeTypeOrder;
 import com.ydsh.demo.web.entity.Invoice;
-import com.ydsh.demo.web.entity.PayApply;
 import com.ydsh.demo.web.service.ConsumeTypeOrderService;
 import com.ydsh.demo.web.service.InvoiceService;
 import com.ydsh.generator.common.JsonResult;
-import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.annotations.Api;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * <p>自定义方法写在这里</p>
@@ -46,6 +44,7 @@ import java.util.List;
 @RequestMapping("/invoice")
 @Slf4j
 public class InvoiceController extends AbstractController<InvoiceService,Invoice>{
+    @Autowired
     ConsumeTypeOrderService orderService;
     /**
      * @explain 模糊查询
@@ -72,7 +71,7 @@ public class InvoiceController extends AbstractController<InvoiceService,Invoice
         );
             returnPage.success(invoices);
         } else {
-            result.error("查询条件为空！");
+            result.error("查询条件不能为空！");
         }
         return returnPage;
     }
@@ -100,10 +99,10 @@ public class InvoiceController extends AbstractController<InvoiceService,Invoice
                 if(orderService.saveBatch(orders)){
                     result.success("添加成功");
                 }else{
-                    result.error("订单明细添加失败！");
+                    result.error("添加失败！");
                 }
             } else {
-                result.error("发票信息添加失败！");
+                result.error("添加失败！");
             }
         } else {
             result.error("请传入正确参数！");
@@ -124,7 +123,7 @@ public class InvoiceController extends AbstractController<InvoiceService,Invoice
             List<ConsumeTypeOrder> consumeTypeOrders = orderService.getBaseMapper().selectList(new QueryWrapper<ConsumeTypeOrder>()
                     .eq("invoice_id", invoiceId )
             );
-            if(consumeTypeOrders.size() > 0){
+            if(consumeTypeOrders.size() > 0 && consumeTypeOrders != null){
                 invoice.setOrders(consumeTypeOrders);
                 result.success(invoice);
             }else{
@@ -149,20 +148,43 @@ public class InvoiceController extends AbstractController<InvoiceService,Invoice
         }else if (null != invoice) {
             Integer successId = baseService.getBaseMapper().updateById(invoice);
             if (successId > 0 && successId!=null) {
-                //添加此发票对应的多张订单
-                List<ConsumeTypeOrder> orders = invoice.getOrders();
-                for (ConsumeTypeOrder order : orders) {
-                    order.setInvoiceId(invoice.getId().longValue());
-                }
-                int successLine = orderService.getBaseMapper().delete(new QueryWrapper<ConsumeTypeOrder>()
+                List<Long> formerIds = new ArrayList<>();
+                List<Long> updateIds = new ArrayList<>();
+                //获得之前的订单明细ID集合
+                List<ConsumeTypeOrder> formerOrders = orderService.getBaseMapper().selectList(new QueryWrapper<ConsumeTypeOrder>()
+                        .select("order_id")
                         .eq("invoice_id", invoice.getId() ));
-                if(successLine > 0){
-                    result.success("添加成功");
+                for (ConsumeTypeOrder order : formerOrders) {
+                    formerIds.add(order.getOrderId());
+                }
+                //获得更新之后的订单明细ID集合
+                List<ConsumeTypeOrder> updateOrders = invoice.getOrders();
+                for (ConsumeTypeOrder order : updateOrders) {
+                    updateIds.add(order.getOrderId());
+                }
+                List<Long> deleteIds = formerIds.stream().filter(item -> !updateIds.contains(item)).collect(toList());
+                if(deleteIds.size() > 0 && deleteIds!=null){
+                    Integer successDelete = orderService.getBaseMapper().deleteBatchIds(deleteIds);
+                    if(successDelete > 0 && successDelete!=null){
+                        boolean successSaveOrUpdate= orderService.saveOrUpdateBatch(updateOrders);
+                        if(successSaveOrUpdate){
+                            result.success("更新成功");
+                        }else{
+                            result.error("更新失败！");
+                        }
+                    }else{
+                        result.error("更新失败！");
+                    }
                 }else{
-                    result.error("订单明细更新失败！");
+                    boolean successSaveOrUpdate= orderService.saveOrUpdateBatch(updateOrders);
+                    if(successSaveOrUpdate){
+                        result.success("更新成功");
+                    }else{
+                        result.error("更新失败！");
+                    }
                 }
             } else {
-                result.error("发票信息添加失败！");
+                result.error("发票信息更新失败！");
             }
         } else {
             result.error("请传入正确参数！");
