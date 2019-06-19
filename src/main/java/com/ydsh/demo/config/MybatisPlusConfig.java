@@ -5,11 +5,9 @@ import com.baomidou.mybatisplus.core.injector.ISqlInjector;
 import com.baomidou.mybatisplus.extension.injector.LogicSqlInjector;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PerformanceInterceptor;
-import org.mybatis.spring.annotation.MapperScan;
+import com.ydsh.demo.common.handler.MyMetaObjectHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.UUID;
 
 //import com.baomidou.mybatisplus.spring.*;
 
@@ -48,13 +46,6 @@ public class MybatisPlusConfig {
         PaginationInterceptor paginationInterceptor = new PaginationInterceptor();
 //        paginationInterceptor.setLocalPage(true);// 开启 PageHelper 的支持
         return paginationInterceptor;
-    }
-    /**
-     * 配置公共字段填充
-     */
-    @Bean
-    public MetaObjectHandler metaObjectHandler(){
-        return new MyMetaObjectHandler();
     }
 
 

@@ -21,7 +21,7 @@ import java.util.function.BiPredicate;
  **/
 public class YdshCodeGenerator {
     // 基础信息：项目名、作者、版本
-    public static final String PROJECT = "ydsh-saas-service-demo";
+    public static final String PROJECT = "ydsh-saas-service-finance";
     public static final String AUTHOR = "姚仲杰";
     public static final String VERSION = "V1.0";
     // 数据库连接信息：连接URL、用户名、秘密、数据库名
@@ -45,9 +45,9 @@ public class YdshCodeGenerator {
         BasisInfo bi = new BasisInfo(PROJECT, AUTHOR, VERSION, URL, NAME, PASS, DATABASE, ENTITY_URL,
                 DAO_URL, XML_URL, SERVICE_URL, SERVICE_IMPL_URL, CONTROLLER_URL);
         //全库生成
-        generateByAll(bi);
+//        generateByAll(bi);
         //单表生成
-//        generateByTable(bi,"invoice","表注释");
+        generateByTable(bi,"consume_type_order","表注释");
     }
 
     public static void generateByTable(BasisInfo bi, String table, String classComment){

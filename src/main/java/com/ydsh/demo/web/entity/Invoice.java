@@ -1,12 +1,14 @@
 /**
- * @filename:Invoice 2019-06-14 02:36:06
+ * @filename:Invoice 2019-06-14 04:12:45
  * @project ydsh-saas-service-demo  V1.0
  * Copyright(c) 2020 姚仲杰 Co. Ltd. 
  * All right reserved. 
  */
 package com.ydsh.demo.web.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -16,7 +18,12 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import java.util.Date;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
+
+import static com.baomidou.mybatisplus.annotation.FieldStrategy.IGNORED;
 
 /**   
  * <p>代码自动生成，请勿修改</p>
@@ -30,7 +37,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 public class Invoice implements Serializable {
 
-	private static final long serialVersionUID = 1560494166774L;
+	private static final long serialVersionUID = 1560499965399L;
 	
 	@TableId(value = "id", type = IdType.AUTO)
 	@ApiModelProperty(name = "id" , value = "主键ID")
@@ -38,8 +45,10 @@ public class Invoice implements Serializable {
 	@ApiModelProperty(name = "invoiceNo" , value = "发票单号")
 	private String invoiceNo;
 	@ApiModelProperty(name = "invoiceKind" , value = "开票种类")
+	@NotNull(message = "开票种类不允许为空")
 	private String invoiceKind;
 	@ApiModelProperty(name = "invoiceType" , value = "开票类型")
+	@NotNull(message = "开票类型不允许为空")
 	private String invoiceType;
 	@ApiModelProperty(name = "invoiceAmount" , value = "开票金额")
 	private Long invoiceAmount;
@@ -70,6 +79,7 @@ public class Invoice implements Serializable {
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	@ApiModelProperty(name = "createTime" , value = "提交时间 ")
+	@TableField(fill= FieldFill.INSERT_UPDATE)
 	private Date createTime;
 	@ApiModelProperty(name = "examine" , value = "审批")
 	private String examine;
@@ -79,4 +89,16 @@ public class Invoice implements Serializable {
 	private String expressCompany;
 	@ApiModelProperty(name = "expressNo" , value = "快递单号")
 	private String expressNo;
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	@ApiModelProperty(name = "beginTime" , value = "开始时间")
+	@TableField(strategy = IGNORED)
+	private Date beginTime;
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	@ApiModelProperty(name = "endTime" , value = "结束时间")
+	@TableField(strategy = IGNORED)
+	private Date endTime;
+	@TableField(strategy = IGNORED)
+	private List<ConsumeTypeOrder> orders;
 }

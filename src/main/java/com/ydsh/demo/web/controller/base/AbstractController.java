@@ -7,11 +7,12 @@
 package com.ydsh.demo.web.controller.base;
 
 import com.baomidou.mybatisplus.core.enums.SqlLike;
+import com.ydsh.demo.common.db.DBKeyGenerator;
+import com.ydsh.demo.common.enums.DBBusinessKeyTypeEnums;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.*;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -22,7 +23,13 @@ import com.ydsh.generator.common.PageParam;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.awt.print.Book;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**   
  * <p>代码自动生成，请勿修改</p>
@@ -67,20 +74,34 @@ public class AbstractController<S extends IService<T>,T>{
 	 */
     @RequestMapping(value = "/insert",method = RequestMethod.POST)
 	@ApiOperation(value = "添加", notes = "作者：姚仲杰")
-	public JsonResult<T> insert(@RequestBody T entity){
+	public JsonResult<T> insert( @Valid T entity, BindingResult verify){
 		JsonResult<T> result=new JsonResult<T>();
-		if (null!=entity) {
-			boolean rsg = baseService.save(entity);
-			if (rsg) {
-				  result.success("添加成功");
-			  }else {
-				  result.error("添加失败！");
-			  }
-		}else {
-			result.error("请传入正确参数！");
-		}
+        if (verify.hasErrors()) {
+            result = getVerifyInfo( verify );
+        }else if (null != entity) {
+                    boolean rsg = baseService.save(entity);
+                    if (rsg) {
+                        result.success("添加成功");
+                    } else {
+                        result.error("添加失败！");
+                    }
+                } else {
+                    result.error("请传入正确参数！");
+                }
 		return result;
 	}
+    //校验有错时，获取错误信息
+    public JsonResult<T> getVerifyInfo( BindingResult verify) {
+        JsonResult<T> result=new JsonResult<T>();
+        Map<String, String> messages = new HashMap<>();
+        verify.getAllErrors().forEach((error) -> {
+            FieldError fieldError = (FieldError) error;
+            messages.put(fieldError.getField(), fieldError.getDefaultMessage());
+        });
+        result.error(messages.toString());
+        System.out.println(messages.toString());
+        return result;
+    }
 
 	/**
 	* @explain 批量添加
@@ -116,9 +137,11 @@ public class AbstractController<S extends IService<T>,T>{
 	 */
 	@RequestMapping(value = "/updateById",method = RequestMethod.POST)
 	@ApiOperation(value = "修改", notes = "作者：姚仲杰")
-	public JsonResult<T> updateById(@RequestBody T entity){
+	public JsonResult<T> updateById(@Valid @RequestBody T entity,BindingResult verify){
 		JsonResult<T> result=new JsonResult<T>();
-		if (null!=entity) {
+        if (verify.hasErrors()) {
+            result = getVerifyInfo( verify );
+        }else if (null!=entity) {
 			boolean rsg = baseService.updateById(entity);
 			if (rsg) {
 				  result.success("修改成功");

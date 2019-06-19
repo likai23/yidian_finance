@@ -7,11 +7,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigService;
 import com.ydsh.demo.common.bean.Result;
 import com.ydsh.demo.common.db.DBKeyGenerator;
 import com.ydsh.demo.common.enums.DBBusinessKeyTypeEnums;
+import com.ydsh.demo.web.entity.ConsumeTypeOrder;
 import com.ydsh.demo.web.entity.Invoice;
 import com.ydsh.demo.web.service.InvoiceService;
 import com.ydsh.generator.common.JsonResult;
@@ -22,7 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-
+import java.util.ArrayList;
+import java.util.List;
 
 
 @RunWith(SpringRunner.class)
@@ -53,8 +57,11 @@ public class ServiceDemoApplicationTests {
     @Test
     public void dbkeyTest() {
 
-        String key = DBKeyGenerator.generatorDBKey(DBBusinessKeyTypeEnums.C, null);
-        System.out.println(key);
+        ConsumeTypeOrder a = new ConsumeTypeOrder();
+        List<ConsumeTypeOrder> orders = new ArrayList<>();
+        orders.add(a);
+        IService<ConsumeTypeOrder> service = new ServiceImpl();
+        service.saveBatch(orders);
     }
 
     public static void main(String[] args) {
