@@ -12,8 +12,6 @@ import java.util.Date;
 @Component
 public class MyMetaObjectHandler implements MetaObjectHandler {
 
-//    private static final Logger LOGGER = LoggerFactory.getLogger(MyMetaObjectHandler.class);
-
     @Override
     public void insertFill(MetaObject metaObject) {
 //        LOGGER.info("start insert fill ....");

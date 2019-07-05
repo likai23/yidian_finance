@@ -51,7 +51,7 @@ public class InvoiceWithOrderServiceImpl  extends ServiceImpl<InvoiceWithOrderDa
     @Override
     public JsonResult<Invoice> saveInvoiceOrders(Invoice invoice){
         if (TextUtils.isEmpty( this.orders)) {
-            return result.error("没有初始化明细！");
+            return result.error("不确定是哪种明细！");
         }
         JsonResult<Invoice> result=new JsonResult<>();
         //添加此发票对应的多张订单
@@ -69,7 +69,7 @@ public class InvoiceWithOrderServiceImpl  extends ServiceImpl<InvoiceWithOrderDa
     @Override
     public JsonResult<Invoice> updateInvoiceOrders(Invoice invoice) {
         if (TextUtils.isEmpty( this.orders)) {
-            return result.error("没有初始化明细！");
+            return result.error("不确定是哪种明细！");
         }
         JsonResult<Invoice> result=new JsonResult<>();
         //把更新之前的订单明细删除
@@ -93,7 +93,7 @@ public class InvoiceWithOrderServiceImpl  extends ServiceImpl<InvoiceWithOrderDa
     @Override
     public JsonResult<Invoice> checkInvoiceOrders(Invoice invoice) {
         if (TextUtils.isEmpty( this.orders)) {
-            return result.error("没有初始化明细！");
+            return result.error("不确定是哪种明细！");
         }
         JsonResult<Invoice> result=new JsonResult<>();
 

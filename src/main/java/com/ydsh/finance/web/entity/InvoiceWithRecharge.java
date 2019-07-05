@@ -1,8 +1,8 @@
 /**
  * @filename:InvoiceWithRecharge 2019-07-01 03:21:04
  * @project ydsh-saas-service-finance  V1.0
- * Copyright(c) 2020 姚仲杰 Co. Ltd. 
- * All right reserved. 
+ * Copyright(c) 2020 姚仲杰 Co. Ltd.
+ * All right reserved.
  */
 package com.ydsh.finance.web.entity;
 
@@ -17,20 +17,20 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.io.Serializable;
 import java.util.Date;
 
-/**   
+/**
  * <p>代码自动生成，请勿修改</p>
- * 
+ *
  * <p>说明： 表注释实体类</P>
  * @version: V1.0
  * @author: 姚仲杰
- * 
+ *
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class InvoiceWithRecharge extends Detail implements Serializable {
 
 	private static final long serialVersionUID = 1561965664606L;
-	
+
 	@TableId(value = "id", type = IdType.AUTO)
 	@ApiModelProperty(name = "id" , value = "主键ID")
 	private Long id;
@@ -56,9 +56,13 @@ public class InvoiceWithRecharge extends Detail implements Serializable {
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	@ApiModelProperty(name = "receivePaymentTime" , value = "到款时间")
 	private Date receivePaymentTime;
-
+	/**
+	 * 新增的属性或方法  不映射数据库字段
+	 */
+	//标记这是发票对应的充值明细表
+	public static String rechargeDetail = "recharge";
 	@Override
 	public String whichDetail() {
-		return "recharge";
+		return rechargeDetail;
 	}
 }

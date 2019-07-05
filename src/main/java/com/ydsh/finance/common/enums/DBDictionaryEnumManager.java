@@ -12,11 +12,45 @@ public enum DBDictionaryEnumManager {
 	/**
 	 * 发票状态
 	 */
-	invoice_status_0("0","待审核"),
-	invoice_status_1("1","审核通过"),
-	invoice_status_2("2","审核不通过"),
-	invoice_status_3("3","已开票"),
-	invoice_status_4("4","作废"),
+	invoice_status_0("is_0","已开票"),
+	invoice_status_1("is_1","作废"),
+	/**
+	 * 发票种类
+	 */
+	invoice_kind_0("ik_0","消费开票"),
+	invoice_kind_1("ik_1","来款开票"),
+	invoice_kind_2("ik_2","开票付款"),
+	/**
+	 * 发票方式
+	 */
+	invoice_way_0("iw_0","电子发票"),
+	invoice_way_1("iw_1","纸质发票"),
+	/**
+	 * 发票类型
+	 */
+	invoice_type_0("it_0","增值税专用发票"),
+	invoice_type_1("it_1","增值税普通发票"),
+	/**
+	 * 付款申请单 付款类型
+	 */
+	payapply_type_0("pt_0","采购付款"),
+	payapply_type_1("pt_1","售后退款"),
+	payapply_type_2("pt_2","核销结算付款"),
+	payapply_type_3("pt_3","发放结算付款"),
+	payapply_type_4("pt_4","直充结算付款"),
+	/**
+	 * 公告类型
+	 */
+	notice_type_0("nt_0","通知"),
+	notice_type_1("nt_1","站内信"),
+	notice_type_2("nt_2","提醒"),
+	/**
+	 * 公告状态
+	 */
+	notice_status_0("ns_0","已发布"),
+	notice_status_1("ns_1","未发布"),
+	notice_status_2("ns_2","已关闭"),
+
 	/**
 	 * 1-充值状态
 	 * 2-退款状态

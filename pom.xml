@@ -45,7 +45,7 @@
         <dependency>
             <groupId>com.ydsh</groupId>
             <artifactId>generator</artifactId>
-            <version>1.0.5</version>
+            <version>1.0.6</version>
         </dependency>
 
         <dependency>

@@ -75,8 +75,10 @@ public class InvoiceWithOrder extends Detail implements Serializable {
 	/**
 	 * 新增的属性或方法  不映射数据库字段
 	 */
+	//标记这是发票对应的订单明细表
+	public static String orderDetail = "order";
 	@Override
 	public String whichDetail() {
-		return "order";
+		return orderDetail;
 	}
 }

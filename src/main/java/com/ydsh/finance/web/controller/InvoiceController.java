@@ -9,6 +9,7 @@ package com.ydsh.finance.web.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ydsh.finance.common.constans.CommonConstans;
 import com.ydsh.finance.common.db.DBKeyGenerator;
 import com.ydsh.finance.common.enums.DBBusinessKeyTypeEnums;
 import com.ydsh.finance.common.enums.DBDictionaryEnumManager;
@@ -33,10 +34,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -69,32 +67,49 @@ public class InvoiceController extends AbstractController<InvoiceService,Invoice
         Invoice invoice =  pageParam.getParam();
         Integer pageSize = pageParam.getPageSize();
         Integer pageNum = pageParam.getPageNum();
-        if ( pageSize > 500) {
-            return resultPage.error("每页数据的数量超过500个，请正确操作！");
+        if ( pageSize > CommonConstans.MAX_PAGESIZE ) {
+            return resultPage.error("每页数据的数量不允许超过500个，请正确操作！");
         }
-        if ( pageNum <= 0) {
+        if ( pageNum <= CommonConstans.LIMIT_PAGENUM ) {
             pageParam.setPageNum(1);
         }
-        IPage<Invoice> invoices = baseService.page(new Page<>(pageParam.getPageNum(), pageParam.getPageSize()),
-        new QueryWrapper<Invoice>()
-                .like(!TextUtils.isEmpty(invoice.getInvoiceNo()),"invoice_no",invoice.getInvoiceNo())
-                .like(!TextUtils.isEmpty(invoice.getInvoiceStatus()),"invoice_status",invoice.getInvoiceStatus())
-                .like(!TextUtils.isEmpty(invoice.getInvoiceType()),"invoice_type",invoice.getInvoiceType())
-                .like(!TextUtils.isEmpty(invoice.getInvoiceKind()),"invoice_kind",invoice.getInvoiceKind())
-                .like(!TextUtils.isEmpty(invoice.getCreateId()),"create_id",invoice.getCreateId())
-                .between(!TextUtils.isEmpty(invoice.getCreateTime()), "create_time", invoice.getBeginTime(), invoice.getEndTime())
-                .like(!TextUtils.isEmpty(invoice.getPhone()),"phone",invoice.getPhone())
+        Map<String, Object> map = new HashMap<>();
+        if (invoice != null) {
+            map = MapBeanUtil.objectCamel2MapUnderline(invoice);
+        }
+        QueryWrapper<Invoice> queryWrapper = new QueryWrapper<>();
+        //循环调用
+        for(Map.Entry<String, Object> entry : map.entrySet()){
+//            log.info(entry.getKey()+":"+entry.getValue());
+            if(entry.getValue() instanceof Date){
+                queryWrapper.between(!TextUtils.isEmpty(entry.getValue()), entry.getKey(), invoice.getBeginTime(), invoice.getEndTime());
+            }else{
+                queryWrapper.likeRight(!TextUtils.isEmpty(entry.getValue()), entry.getKey(), entry.getValue());
+            }
+        }
+        IPage<Invoice> invoices = baseService.page(new Page<>(pageSize, pageNum),
+                queryWrapper
         );
+//        IPage<Invoice> invoices = baseService.page(new Page<>(pageParam.getPageNum(), pageParam.getPageSize()),
+//        new QueryWrapper<Invoice>()
+//                .like(!TextUtils.isEmpty(invoice.getInvoiceNo()),"invoice_no",invoice.getInvoiceNo())
+//                .like(!TextUtils.isEmpty(invoice.getInvoiceStatus()),"invoice_status",invoice.getInvoiceStatus())
+//                .like(!TextUtils.isEmpty(invoice.getInvoiceType()),"invoice_type",invoice.getInvoiceType())
+//                .like(!TextUtils.isEmpty(invoice.getInvoiceKind()),"invoice_kind",invoice.getInvoiceKind())
+//                .like(!TextUtils.isEmpty(invoice.getCreateId()),"create_id",invoice.getCreateId())
+//                .between(!TextUtils.isEmpty(invoice.getCreateTime()), "create_time", invoice.getBeginTime(), invoice.getEndTime())
+//                .like(!TextUtils.isEmpty(invoice.getPhone()),"phone",invoice.getPhone())
+//        );
         resultPage.success(invoices);
         return resultPage;
     }
     /**
-     * 分页查询发票信息
+     * 分页查询发票信息 没有模糊查询
      * @param pageParam
      * @return
      */
     @RequestMapping(value = "/pageInvoiceNoLike", method = RequestMethod.POST)
-    @ApiOperation(value = "分页查询发票信息", notes = "作者：李锴")
+    @ApiOperation(value = "分页查询发票信息 没有模糊查询", notes = "作者：李锴")
     public JsonResult<IPage<Invoice>> pageInvoiceNoLike(@RequestBody PageParam<Invoice> pageParam) {
         log.info("【分页查询发票信息】{},请求参数：{}", "接口请求", pageParam);
         JsonResult<IPage<Invoice>> resultPage = new JsonResult<IPage<Invoice>>();
@@ -147,14 +162,15 @@ public class InvoiceController extends AbstractController<InvoiceService,Invoice
                 return result.error("该发票没有对应的明细！");
             }
             //检查传入的明细
-            if ( invoice.getDetails().get(0).whichDetail().equals("order") ) {
+            if ( invoice.getDetails().get(0).whichDetail().equals(InvoiceWithOrder.orderDetail) ) {
+                //多态向下转型为具体明细
                 orderService.initDetail(invoice);
                 result = orderService.checkInvoiceOrders(invoice);
                 if (TextUtils.isEmpty(result.getMessage())) {
                     return result;
                 }
                 invoice.setWhichDetail(0);
-            }else if ( invoice.getDetails().get(0).whichDetail().equals("recharge") ){
+            }else if ( invoice.getDetails().get(0).whichDetail().equals(InvoiceWithRecharge.rechargeDetail) ){
                 rechargeService.initDetail(invoice);
                 result = rechargeService.checkInvoiceRecharges(invoice);
                 if (TextUtils.isEmpty(result.getMessage())) {
@@ -172,9 +188,9 @@ public class InvoiceController extends AbstractController<InvoiceService,Invoice
                 return result.error("添加失败！");
             }
             //根据不同的明细，存入不同的明细表
-            if ( invoice.getDetails().get(0).whichDetail().equals("order") ) {
+            if ( invoice.getDetails().get(0).whichDetail().equals(InvoiceWithOrder.orderDetail) ) {
                 result = orderService.saveInvoiceOrders(invoice);
-            }else if ( invoice.getDetails().get(0).whichDetail().equals("recharge")){
+            }else if ( invoice.getDetails().get(0).whichDetail().equals(InvoiceWithRecharge.rechargeDetail)){
                 result = rechargeService.saveInvoiceRecharges(invoice);
             }
             return result;
@@ -308,14 +324,14 @@ public class InvoiceController extends AbstractController<InvoiceService,Invoice
         if (TextUtils.isEmpty(invoice.getDetails())) {
             return result.error("该发票没有对应的明细！");
         }
-        if ( invoice.getDetails().get(0).whichDetail().equals("orders")  ) {
+        if ( invoice.getDetails().get(0).whichDetail().equals(InvoiceWithOrder.orderDetail)  ) {
             orderService.initDetail(invoice);
             result = orderService.checkInvoiceOrders(invoice);
             if (TextUtils.isEmpty(result.getMessage())) {
                 return result;
             }
             invoice.setWhichDetail(0);
-        }else if (  invoice.getDetails().get(0).whichDetail().equals("recharge") ){
+        }else if (  invoice.getDetails().get(0).whichDetail().equals(InvoiceWithRecharge.rechargeDetail) ){
             rechargeService.initDetail(invoice);
             result = rechargeService.checkInvoiceRecharges(invoice);
             if (TextUtils.isEmpty(result.getMessage())) {
@@ -352,14 +368,14 @@ public class InvoiceController extends AbstractController<InvoiceService,Invoice
             return result.error("该付款申请单数据不完整！");
         }
         //检查数据库中子表数据
-        if ( invoice.getDetails().get(0).whichDetail().equals("orders") ) {
+        if ( invoice.getDetails().get(0).whichDetail().equals(InvoiceWithOrder.orderDetail) ) {
             List<InvoiceWithOrder> invoiceWithOrders = orderService.list(new QueryWrapper<InvoiceWithOrder>()
                     .lambda().eq(InvoiceWithOrder::getInvoiceId, invoiceId)
             );
             if (TextUtils.isEmptys(invoiceWithOrders)) {
                 return result.error("该发票没有对应订单明细，请联系管理员！");
             }
-        }else if ( invoice.getDetails().get(0).whichDetail().equals("recharge") ) {
+        }else if ( invoice.getDetails().get(0).whichDetail().equals(InvoiceWithRecharge.rechargeDetail) ) {
             List<InvoiceWithRecharge> invoiceWithRecharge = rechargeService.list(new QueryWrapper<InvoiceWithRecharge>()
                     .lambda().eq(InvoiceWithRecharge::getInvoiceId, invoiceId)
             );
@@ -372,18 +388,18 @@ public class InvoiceController extends AbstractController<InvoiceService,Invoice
             return result.error("发票信息更新失败！");
         }
         //根据不同的明细，更新不同的明细表
-        if ( invoice.getDetails().get(0).whichDetail().equals("orders") ) {
+        if ( invoice.getDetails().get(0).whichDetail().equals(InvoiceWithOrder.orderDetail) ) {
             result = orderService.updateInvoiceOrders(invoice);
             if (TextUtils.isEmpty(result.getMessage())) {
                 return result;
             }
-        }else if ( invoice.getDetails().get(0).whichDetail().equals("recharge") ){
+        }else if ( invoice.getDetails().get(0).whichDetail().equals(InvoiceWithRecharge.rechargeDetail) ){
             result = rechargeService.updateInvoiceRecharges(invoice);
             if (TextUtils.isEmpty(result.getMessage())) {
                 return result;
             }
         }else {
-            return result.error("发票信息更新失败！");
+            return result.error("不确定发票对应的明细类型！");
         }
             return result;
     }
@@ -416,19 +432,19 @@ public class InvoiceController extends AbstractController<InvoiceService,Invoice
                     return result.error("发票不存在！");
                 }
                 if (TextUtils.isEmptys( invoiceDb.getInvoiceStatus())) {
-                    return result.error("该付款申请单状态异常！");
+                    return result.error("该发票状态异常！");
                 }
                 if (!(DBDictionaryEnumManager.review_0.getkey().equals(invoiceDb.getInvoiceStatus()) ||
                         DBDictionaryEnumManager.review_1.getkey().equals(invoiceDb.getInvoiceStatus()))
                         ) {
-                    return result.error("id为"+invoiceDb.getId()+"号的发票无法修改！");
+                    return result.error("id为"+invoiceDb.getId()+"号的发票无法进行作废操作！");
                 }
-                invoiceDb.setInvoiceStatus(DBDictionaryEnumManager.invoice_status_4.getkey());
+                invoiceDb.setInvoiceStatus(DBDictionaryEnumManager.invoice_status_1.getkey());
             }
-            if ( !baseService.updateBatchById(invoiceDbs)) {
-                return result.error("作废操作失败！");
+            if ( baseService.updateBatchById(invoiceDbs)) {
+                return result.success("发票作废操作成功！");
             }else{
-                return result.success("作废操作成功！");
+                return result.error("发票作废操作失败！");
             }
         }else if(updateSign.equals("reviewInvoice")) {// 审核
            //检验传入的审核值
@@ -436,8 +452,8 @@ public class InvoiceController extends AbstractController<InvoiceService,Invoice
             if (TextUtils.isEmpty( examine)) {
                 return result.error("审核值不允许为空！");
             }
-            if ( !examine.equals(DBDictionaryEnumManager.invoice_status_1.getkey()) &&
-                    !examine.equals(DBDictionaryEnumManager.invoice_status_2.getkey())) {
+            if ( !examine.equals(DBDictionaryEnumManager.review_1.getkey()) &&
+                    !examine.equals(DBDictionaryEnumManager.review_2.getkey())) {
                 return result.error("传入的审核值有误！");
             }
             //检验传入的id
@@ -457,7 +473,7 @@ public class InvoiceController extends AbstractController<InvoiceService,Invoice
                 return result.error("该发票不是待审核状态，无法审核！");
             }
             // 是否作废
-            if (DBDictionaryEnumManager.invoice_status_4.getkey().equals(invoiceDb.getInvoiceStatus())) {
+            if (DBDictionaryEnumManager.invoice_status_1.getkey().equals(invoiceDb.getInvoiceStatus())) {
                 return result.error("该发票已作废！");
             }
 //            if (TextUtils.isEmpty( invoice.getExamineOpinion())) {

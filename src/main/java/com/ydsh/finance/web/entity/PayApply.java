@@ -21,6 +21,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**   
  * <p>代码自动生成，请勿修改</p>
@@ -69,6 +70,11 @@ public class PayApply implements Serializable {
 	@ApiModelProperty(name = "payAmount" , value = "申请付款金额")
 	@NotNull(message = "申请付款金额不允许为空")
 	private Long payAmount;
+	/*
+		是否需要存此字段
+	 */
+	@ApiModelProperty(name = "reviewAmount" , value = "审批付款金额")
+	private Long reviewAmount;
 	@ApiModelProperty(name = "createId" , value = "提交人")
 	private Long createId;
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -92,6 +98,10 @@ public class PayApply implements Serializable {
 	/**
 	 * 新增的属性  不属于数据库字段
 	 */
+	@ApiModelProperty(name = "ids" , value = "批量操作的id集合")
+	@TableField(exist = false)
+	protected List<Integer> ids;
+
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	@ApiModelProperty(name = "beginTime" , value = "开始时间")
